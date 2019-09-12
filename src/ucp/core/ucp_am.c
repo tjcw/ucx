@@ -596,6 +596,7 @@ static void
 ucp_am_rdma_callback(void *request, ucs_status_t status)
 {
     ucs_print("AM RDMA callback request=%p status=%d", request, status) ;
+    ucp_request_free(request) ;
 
 }
 
@@ -1042,6 +1043,8 @@ ucp_am_rdma_completed_callback(void *request, ucs_status_t status)
 
     ucs_list_del(&unfinished->list);
     ucs_free(unfinished);
+
+    ucp_request_free(request) ;
 
 }
 
