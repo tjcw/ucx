@@ -28,6 +28,7 @@ public:
     void *reply;
     void *for_release[NUM_MESSAGES];
     int release;
+    char am_rendezvous_buffer[32] ;
 
     static ucp_params_t get_ctx_params() {
         ucp_params_t params = ucp_test::get_ctx_params();
@@ -112,7 +113,7 @@ ucs_status_t ucp_process_am_rendezvous_cb(void *arg, void *data,
                                       ucp_am_rendezvous_recv_t *recv)
   {
     test_ucp_am_base *self = reinterpret_cast<test_ucp_am_base*>(arg);
-    return self->am_rendezvous_handler(self, data, length, flags, remaining_length, recv)
+    return self->am_rendezvous_handler(self, data, length, flags, remaining_length, recv) ;
   }
 
 ucs_status_t test_ucp_am_base::am_handler(test_ucp_am_base *me, void *data,
@@ -206,7 +207,7 @@ void test_ucp_am::set_reply_handlers()
 void test_ucp_am::set_handlers(uint16_t am_id)
 {
     ucp_am_params_t am_params ;
-    am_params.flags = UCP_AM_FLAG_WHOLE_MSG ;
+    am_params.flags = 0 ;
     am_params.field_mask = UCP_AM_FIELD_FLAGS ;
 
     ucp_worker_set_am_handler(sender().worker(),
