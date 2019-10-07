@@ -19,8 +19,6 @@
 
 BEGIN_C_DECLS
 
-
-
 END_C_DECLS
 
 #endif

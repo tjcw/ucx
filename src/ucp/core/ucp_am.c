@@ -65,10 +65,11 @@ UCS_PROFILE_FUNC_VOID(ucp_am_data_release,
 }
 
 UCS_PROFILE_FUNC(ucs_status_t, ucp_worker_set_am_handler,
-                 (worker, id, cb, arg, flags),
-                 ucp_worker_h worker, uint16_t id, 
-                 ucp_am_callback_t cb, void *arg, 
-                 uint32_t flags)
+                 (worker, params, id, cb, arg),
+                 ucp_worker_h worker,
+                 const ucp_am_params_t *params,
+                 uint16_t id,
+                 ucp_am_callback_t cb, void *arg)
 {
     size_t num_entries;
 
@@ -89,7 +90,8 @@ UCS_PROFILE_FUNC(ucs_status_t, ucp_worker_set_am_handler,
 
     worker->am_cbs[id].cb      = cb;
     worker->am_cbs[id].context = arg;
-    worker->am_cbs[id].flags   = flags;
+    worker->am_cbs[id].flags   = (params->field_mask & UCP_AM_FIELD_FLAGS) ?  params->flags : 0 ;
+    worker->am_cbs[id].iovec_size = (params->field_mask & UCP_AM_FIELD_IOVEC_SIZE) ? params->iovec_size : 0 ;
 
     return UCS_OK;
 }
@@ -506,7 +508,9 @@ ucp_am_handler_common(ucp_worker_h worker, void *hdr_end,
                                       desc + 1,
                                       args_length,
                                       reply_ep,
-                                      UCP_CB_PARAM_FLAG_DATA);
+                                      UCP_CB_PARAM_FLAG_DATA,
+                                      0,
+                                      NULL);
     if (ucs_unlikely(am_flags & UCT_CB_PARAM_FLAG_DESC)) {
         return status;
     }
@@ -586,7 +590,9 @@ ucp_am_handle_unfinished(ucp_worker_h worker,
                                           unfinished->all_data + 1,
                                           long_hdr->total_size,
                                           reply_ep,
-                                          UCP_CB_PARAM_FLAG_DATA);
+                                          UCP_CB_PARAM_FLAG_DATA,
+                                          0,
+                                          NULL);
 
         if (status != UCS_INPROGRESS) {
             ucs_free(unfinished->all_data);
