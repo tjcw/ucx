@@ -41,12 +41,16 @@ public:
     static ucs_status_t ucp_process_am_cb(void *arg, void *data,
                                           size_t length,
                                           ucp_ep_h reply_ep,
-                                          unsigned flags);
+                                          unsigned flags,
+                                          size_t remaining_length,
+                                          ucp_am_recv_t *recv);
 
     static ucs_status_t ucp_process_reply_cb(void *arg, void *data,
                                              size_t length,
                                              ucp_ep_h reply_ep,
-                                             unsigned flags);
+                                             unsigned flags,
+                                             size_t remaining_length,
+                                             ucp_am_recv_t *recv);
 
     ucs_status_t am_handler(test_ucp_am_base *me, void *data,
                             size_t  length, unsigned flags);
@@ -55,7 +59,9 @@ public:
 ucs_status_t test_ucp_am_base::ucp_process_reply_cb(void *arg, void *data,
                                                     size_t length,
                                                     ucp_ep_h reply_ep,
-                                                    unsigned flags)
+                                                    unsigned flags,
+                                                    size_t remaining_length,
+                                                    ucp_am_recv_t *recv)
 {
     test_ucp_am_base *self = reinterpret_cast<test_ucp_am_base*>(arg);
     self->replies++;
@@ -65,7 +71,9 @@ ucs_status_t test_ucp_am_base::ucp_process_reply_cb(void *arg, void *data,
 ucs_status_t test_ucp_am_base::ucp_process_am_cb(void *arg, void *data,
                                                  size_t length,
                                                  ucp_ep_h reply_ep,
-                                                 unsigned flags)
+                                                 unsigned flags,
+                                                 size_t remaining_length,
+                                                 ucp_am_recv_t *recv)
 {
     test_ucp_am_base *self = reinterpret_cast<test_ucp_am_base*>(arg);
     
@@ -127,22 +135,34 @@ protected:
 
 void test_ucp_am::set_reply_handlers()
 {
-    ucp_worker_set_am_handler(sender().worker(), UCP_REPLY_ID,
-                              ucp_process_reply_cb, this,
-                              UCP_AM_FLAG_WHOLE_MSG);
-    ucp_worker_set_am_handler(receiver().worker(), UCP_REPLY_ID,
-                              ucp_process_reply_cb, this,
-                              UCP_AM_FLAG_WHOLE_MSG);
+    ucp_am_params_t am_params ;
+    am_params.flags = UCP_AM_FLAG_WHOLE_MSG ;
+    am_params.field_mask = UCP_AM_FIELD_FLAGS ;
+
+    ucp_worker_set_am_handler(sender().worker(),
+                              &am_params,
+                              UCP_REPLY_ID,
+                              ucp_process_reply_cb, this);
+    ucp_worker_set_am_handler(receiver().worker(),
+                              &am_params,
+                              UCP_REPLY_ID,
+                              ucp_process_reply_cb, this);
 }
 
 void test_ucp_am::set_handlers(uint16_t am_id)
 {
-    ucp_worker_set_am_handler(sender().worker(), am_id,
-                              ucp_process_am_cb, this,
-                              UCP_AM_FLAG_WHOLE_MSG);
-    ucp_worker_set_am_handler(receiver().worker(), am_id,
-                              ucp_process_am_cb, this,
-                              UCP_AM_FLAG_WHOLE_MSG);
+    ucp_am_params_t am_params ;
+    am_params.flags = UCP_AM_FLAG_WHOLE_MSG ;
+    am_params.field_mask = UCP_AM_FIELD_FLAGS ;
+
+    ucp_worker_set_am_handler(sender().worker(),
+                              &am_params,
+                              am_id,
+                              ucp_process_am_cb, this);
+    ucp_worker_set_am_handler(receiver().worker(),
+                              &am_params,
+                              am_id,
+                              ucp_process_am_cb, this);
 }
 
 void test_ucp_am::do_send_process_data_test(int test_release, uint16_t am_id,
