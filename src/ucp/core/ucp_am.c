@@ -1153,7 +1153,7 @@ ucp_am_rendezvous_handler(void *am_arg, void *am_data, size_t am_length,
     ucp_request_t *req;
     ucs_status_ptr_t ret ;
     ucs_status_ptr_t sptr ;
-    ucs_status_t local_status ;
+    ucs_status_t UCS_V_UNUSED local_status ;
 #if defined(UCP_AM_RENDEZVOUS_VERIFY)
     char * payload_data_first_address ;
     char * payload_data_last_address ;
@@ -1338,7 +1338,7 @@ ucp_am_rendezvous_get_completion_callback(void *request, ucs_status_t status)
     ucp_ep_ext_proto_t *ep_ext  = ucp_ep_ext_proto(ep);
     ucp_am_rendezvous_server_unfinished_t *unfinished ;
     ucs_status_ptr_t ret ;
-    ucs_status_t local_status ;
+    ucs_status_t UCS_V_UNUSED local_status ;
 #if defined(UCP_AM_RENDEZVOUS_VERIFY)
     char * payload_data_first_address ;
     char * payload_data_last_address ;
@@ -1456,7 +1456,7 @@ ucp_am_rendezvous_completion_handler(void *am_arg, void *am_data,
 
     ucs_assert(unfinished != NULL ) ;
     ucp_request_t *req = unfinished->req ;
-    ucs_status_t status ;
+    ucs_status_t UCS_V_UNUSED status ;
 
     status = ucp_mem_unmap(worker->context, unfinished->memh) ;
     ucs_assert(status == UCS_OK) ;
