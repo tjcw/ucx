@@ -307,7 +307,9 @@ typedef struct ucp_ep {
     char                          peer_name[UCP_WORKER_NAME_MAX];
 #endif
 
-    UCS_STATS_NODE_DECLARE(stats)
+    UCS_STATS_NODE_DECLARE(stats);
+    /* Ensure that a ucp_ep_ext_proto_t fits in a ucp_ep_t */
+    void                          *padding[4];
 
 } ucp_ep_t;
 
