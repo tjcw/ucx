@@ -777,6 +777,13 @@ UCS_PROFILE_FUNC(ucs_status_ptr_t, ucp_am_rendezvous_send_nb,
                                      ucp_am_rendezvous_callback) ;
     ucs_trace("AM RENDEZVOUS ucp_am_send_rendezvous_req ret=%p", ret) ;
 
+    if ( ret == UCS_OK )
+      {
+        ucs_trace(
+            "AM RENDEZVOUS synchronous completion"
+            ) ;
+        unfinished->status == UCS_OK ;
+      }
 
     if ( unfinished->status != UCS_INPROGRESS)
       {
