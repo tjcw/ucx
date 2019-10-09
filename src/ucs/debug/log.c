@@ -111,6 +111,7 @@ static void ucs_log_print(size_t buffer_size, const char *short_file, int line,
                 tv->tv_sec, tv->tv_usec, ucs_log_hostname, ucs_log_pid,
                 ucs_log_get_thread_num(), short_file, line, "UCX",
                 ucs_log_level_names[level], message);
+        fflush(ucs_log_file) ;
     } else {
         fprintf(stdout,
                 "[%lu.%06lu] %16s:%-4u %-4s %-5s %s\n",
