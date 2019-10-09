@@ -777,13 +777,13 @@ UCS_PROFILE_FUNC(ucs_status_ptr_t, ucp_am_rendezvous_send_nb,
                                      ucp_am_rendezvous_callback) ;
     ucs_trace("AM RENDEZVOUS ucp_am_send_rendezvous_req ret=%p", ret) ;
 
-    if ( ret == UCS_OK )
-      {
-        ucs_trace(
-            "AM RENDEZVOUS synchronous completion"
-            ) ;
-        unfinished->status = UCS_OK ;
-      }
+//    if ( ret == UCS_OK )
+//      {
+//        ucs_trace(
+//            "AM RENDEZVOUS synchronous completion"
+//            ) ;
+//        unfinished->status = UCS_OK ;
+//      }
 
     if ( unfinished->status != UCS_INPROGRESS)
       {
@@ -1468,8 +1468,8 @@ ucp_am_rendezvous_completion_handler(void *am_arg, void *am_data,
     status = ucp_mem_unmap(worker->context, unfinished->memh) ;
     ucs_assert(status == UCS_OK) ;
     ucs_trace(
-    "AM RENDEZVOUS ucp_am_rendezvous_completion_handler unfinished=%p req=%p",
-        unfinished, req) ;
+    "AM RENDEZVOUS ucp_am_rendezvous_completion_handler unfinished=%p req=%p msg_id=0x%016lx",
+        unfinished, req, rendezvous_completion_hdr->msg_id) ;
 
     if ( req != NULL)
       {
