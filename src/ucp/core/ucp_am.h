@@ -6,8 +6,6 @@
 
 #include "ucp_ep.h"
 
-#include <ucp/api/ucpx.h>
-
 #define UCP_AM_CB_BLOCK_SIZE 16
 
 
