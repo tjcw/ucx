@@ -660,6 +660,7 @@ UCS_PROFILE_FUNC(ucs_status_ptr_t, ucp_am_rendezvous_send_nb,
     ucp_worker_h worker = ep->worker ;
     void *packed_rkey ;
     size_t packed_rkey_size ;
+    size_t i ;
 
     ucs_trace("AM RENDEZVOUS am_id=%u datatype=0x%lx count=%lu", id, datatype, count) ;
 
@@ -671,11 +672,15 @@ UCS_PROFILE_FUNC(ucs_status_ptr_t, ucp_am_rendezvous_send_nb,
     }
 
     iovec = (ucp_dt_iov_t *) payload ;
-    if ( UCP_DT_IS_IOV(datatype) && count == 2)
+    if ( UCP_DT_IS_IOV(datatype))
       {
-        ucs_trace("AM RENDEZVOUS iovec[1]=(buffer=%p length=%lu)",
-            iovec[1].buffer, iovec[1].length
+        for ( i = 0 ; i < count ; i += 1 )
+          {
+        ucs_trace("AM RENDEZVOUS iovec[%lu]"
+            "=(buffer=%p length=%lu)",
+            i, iovec[i].buffer, iovec[i].length
             ) ;
+          }
       }
 
     if ( !UCP_DT_IS_IOV(datatype)
