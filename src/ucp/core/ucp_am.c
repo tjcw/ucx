@@ -661,8 +661,7 @@ UCS_PROFILE_FUNC(ucs_status_ptr_t, ucp_am_rendezvous_send_nb,
     void *packed_rkey ;
     size_t packed_rkey_size ;
 
-    ucs_trace("AM RENDEZVOUS am_id=%u", id) ;
-
+    ucs_trace("AM RENDEZVOUS am_id=%u datatype=0x%lx count=%lu", id, datatype, count) ;
 
     UCP_CONTEXT_CHECK_FEATURE_FLAGS(ep->worker->context, UCP_FEATURE_AM,
                                     return UCS_STATUS_PTR(UCS_ERR_INVALID_PARAM));
@@ -672,6 +671,13 @@ UCS_PROFILE_FUNC(ucs_status_ptr_t, ucp_am_rendezvous_send_nb,
     }
 
     iovec = (ucp_dt_iov_t *) payload ;
+    if ( UCP_DT_IS_IOV(datatype) && count == 2)
+      {
+        ucs_trace("AM RENDEZVOUS iovec[1]=(buffer=%p length=%lu)",
+            iovec[1].buffer, iovec[1].length
+            ) ;
+      }
+
     if ( !UCP_DT_IS_IOV(datatype)
         || count != 2
         || iovec[1].length < UCP_AM_RENDEZVOUS_THRESHOLD )
