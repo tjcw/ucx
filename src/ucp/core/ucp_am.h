@@ -46,7 +46,7 @@ enum {
   UCP_AM_RENDEZVOUS_IOVEC_0_MAX_SIZE = 32, /* Amount of iovec[0] carried in
                                             * AM request
                                             */
-  UCP_AM_RENDEZVOUS_THRESHOLD = 1      /* If iovec[1] is shorter than this,
+  UCP_AM_RENDEZVOUS_THRESHOLD = 65536      /* If iovec[1] is shorter than this,
                                         * use the non-RENDEZVOUS path
                                         */
 };
