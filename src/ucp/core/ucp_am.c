@@ -1236,6 +1236,7 @@ ucp_am_rendezvous_handler(void *am_arg, void *am_data, size_t am_length,
     sptr = ucp_get_nb(ep, unfinished->recv.iovec[0].buffer,unfinished->recv.iovec[0].length,
         rendezvous_hdr->address,unfinished->rkey,
         ucp_am_rendezvous_get_completion_callback) ;
+    ucs_trace("AM RENDEZVOUS ucp_get_nb returns %p", sptr) ;
     if (sptr == UCS_OK)
     {
         /* RENDEZVOUS completed synchronoulsly */
