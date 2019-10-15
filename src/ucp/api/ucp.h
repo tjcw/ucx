@@ -2260,7 +2260,7 @@ ucs_status_ptr_t ucp_am_send_nb(ucp_ep_h ep, uint16_t id,
  * @return otherwise        Pointer to request, and Active Message is known
  *                          to be completed after cb is run.
  */
-ucs_status_ptr_t ucp_am_rdma_send_nb(ucp_ep_h ep, uint16_t id,
+ucs_status_ptr_t ucp_am_rendezvous_send_nb(ucp_ep_h ep, uint16_t id,
                                 const void *buffer, size_t count,
                                 ucp_datatype_t datatype,
                                 ucp_send_callback_t cb, unsigned flags);
