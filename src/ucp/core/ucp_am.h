@@ -43,43 +43,43 @@ typedef struct {
 
 enum {
   UCP_PACKED_RKEY_MAX_SIZE = 256 ,   /* Max supported size for a packed rkey */
-  UCP_AM_RDMA_IOVEC_0_MAX_SIZE = 32, /* Amount of iovec[0] carried in AM request */
-  UCP_AM_RDMA_THRESHOLD = 1      /* If iovec[1] is shorter than this, use the non-RDMA path */
+  UCP_AM_RENDEZVOUS_IOVEC_0_MAX_SIZE = 32, /* Amount of iovec[0] carried in AM request */
+  UCP_AM_RENDEZVOUS_THRESHOLD = 1      /* If iovec[1] is shorter than this, use the non-RENDEZVOUS path */
 };
 
-/* Set UCP_AM_RDMA_VERIFY to 1 if you want the receiver of an AM RDMA to check that the RDMA was performed OK */
-#define UCP_AM_RDMA_VERIFY 1
+/* Set UCP_AM_RENDEZVOUS_VERIFY to 1 if you want the receiver of an AM RENDEZVOUS to check that the RENDEZVOUS was performed OK */
+#define UCP_AM_RENDEZVOUS_VERIFY 1
 
 typedef struct {
   size_t            total_size; /* length of buffer needed for all data */
   uint64_t          msg_id;     /* method to match parts of the same AM */
   uintptr_t         ep_ptr;         /* end point ptr, used for maintaing list
                                    of arrivals */
-#if defined(UCP_AM_RDMA_VERIFY)
+#if defined(UCP_AM_RENDEZVOUS_VERIFY)
   size_t            iovec_0_length ; /* Amount of data transferred by iovec[0], for checking */
 #endif
-  char              iovec_0[UCP_AM_RDMA_IOVEC_0_MAX_SIZE] ; /* iovec[0] carried in request */
+  char              iovec_0[UCP_AM_RENDEZVOUS_IOVEC_0_MAX_SIZE] ; /* iovec[0] carried in request */
   uint16_t          am_id;      /* index into callback array */
-#if defined(UCP_AM_RDMA_VERIFY)
+#if defined(UCP_AM_RENDEZVOUS_VERIFY)
   char              iovec_1_first_byte; /* First byte of iovec[1], fro checking */
   char              iovec_1_last_byte; /* Last byte of iovec[1], for checking */
 #endif
-} UCS_S_PACKED ucp_am_rdma_header_t ;
+} UCS_S_PACKED ucp_am_rendezvous_header_t ;
 
 typedef struct {
   uint64_t          msg_id;     /* method to match parts of the same AM */
   uintptr_t         ep_ptr;         /* end point ptr, used for maintaing list
                                    of arrivals */
   uint16_t          am_id;      /* index into callback array */
-  uintptr_t         address;     /* Address for RDMA */
+  uintptr_t         address;     /* Address for RENDEZVOUS */
   char              rkey_buffer[UCP_PACKED_RKEY_MAX_SIZE] ; /* Packed remote key */
-} UCS_S_PACKED ucp_am_rdma_reply_header_t ;
+} UCS_S_PACKED ucp_am_rendezvous_reply_header_t ;
 
 typedef struct {
   uint64_t          msg_id;     /* method to match parts of the same AM */
   uintptr_t         ep_ptr;     /* end point ptr, used for maintaing list
                                    of arrivals */
-} UCS_S_PACKED ucp_am_rdma_completion_header_t ;
+} UCS_S_PACKED ucp_am_rendezvous_completion_header_t ;
 
 typedef struct {
     ucs_list_link_t   list;       /* entry into list of unfinished AM's */
@@ -90,7 +90,7 @@ typedef struct {
 
 typedef struct {
   ucs_list_link_t   list;                                  /* entry into list of unfinished AM's */
-  ucs_status_t      status;                                /* status of the rdma */
+  ucs_status_t      status;                                /* status of the rendezvous */
   ucp_request_t    *req;                                   /* active message request */
   ucp_request_t    *completion_req;                        /* request for issuing the completion active message */
   uint64_t          msg_id;                                /* way to match up all parts of AM */
@@ -98,9 +98,9 @@ typedef struct {
   ucp_mem_h         memh;                                  /* memory handle for mapping to the adapter */
   ucp_rkey_h        rkey;                                  /* remote memory key */
   ucp_send_callback_t cb ;                                 /* callback to drive when the AM is complete */
-  ucp_am_rdma_header_t rdma_header ;                       /* What the client initially sends to the AM server */
-  ucp_am_rdma_completion_header_t rdma_completion_header ; /* What the client sents when RDMA is complete */
-} ucp_am_rdma_client_unfinished_t ;
+  ucp_am_rendezvous_header_t rendezvous_header ;                       /* What the client initially sends to the AM server */
+  ucp_am_rendezvous_completion_header_t rendezvous_completion_header ; /* What the client sents when RENDEZVOUS is complete */
+} ucp_am_rendezvous_client_unfinished_t ;
 
 typedef struct {
   ucs_list_link_t   list;                        /* entry into list of unfinished AM's */
@@ -108,16 +108,16 @@ typedef struct {
   uint64_t          msg_id;                      /* way to match up all parts of AM */
   size_t            total_size;                  /* size of data for AM */
   ucp_mem_h         memh;                        /* memory handle for mapping to the adapter */
-#if defined(UCP_AM_RDMA_VERIFY)
+#if defined(UCP_AM_RENDEZVOUS_VERIFY)
   size_t            iovec_0_length;              /* Amount of data transferred by iovec[0], for checking */
 #endif
-  ucp_am_rdma_reply_header_t rdma_reply_header ; /* What the server sends to the client for an AM */
+  ucp_am_rendezvous_reply_header_t rendezvous_reply_header ; /* What the server sends to the client for an AM */
   uint16_t          am_id ;                      /* active message function index */
-#if defined(UCP_AM_RDMA_VERIFY)
+#if defined(UCP_AM_RENDEZVOUS_VERIFY)
   char              iovec_1_first_byte;          /* First byte of iovec[1], fro checking */
   char              iovec_1_last_byte;           /* Last byte of iovec[1], for checking */
 #endif
-} ucp_am_rdma_server_unfinished_t ;
+} ucp_am_rendezvous_server_unfinished_t ;
 
 void ucp_am_ep_init(ucp_ep_h ep);
 
