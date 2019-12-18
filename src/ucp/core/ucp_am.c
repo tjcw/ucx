@@ -647,7 +647,7 @@ ucp_am_rendezvous_callback(void *request, ucs_status_t status)
 
 }
 
-ucs_status_ptr_t ucp_am_rendezvous_send_nb_internal ()
+ucs_status_ptr_t ucp_am_rendezvous_send_nb_internal (
                  ucp_ep_h ep, uint16_t id, const void *payload,
                  size_t count, uintptr_t datatype,
                  ucp_send_callback_t cb, unsigned flags)
