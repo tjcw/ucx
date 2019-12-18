@@ -20,6 +20,7 @@
 #include <ucs/datastruct/strided_alloc.h>
 #include <ucs/arch/bitops.h>
 
+
 /* The size of the private buffer in UCT descriptor headroom, which UCP may
  * use for its own needs. This size does not include ucp_recv_desc_t length,
  * because it is common for all cases and protocols (TAG, STREAM). */
@@ -198,13 +199,6 @@ typedef struct ucp_worker_am_entry {
     size_t                iovec_size;
 } ucp_worker_am_entry_t;
 
-typedef struct ucp_worker_am_rendezvous_entry {
-    ucp_am_rendezvous_callback_t     cb;
-    void                 *context;
-    uint32_t              flags;
-    size_t                iovec_size;
-} ucp_worker_am_rendezvous_entry_t;
-
 /**
  * UCP worker (thread context).
  */
@@ -252,10 +246,6 @@ typedef struct ucp_worker {
 
     ucp_worker_am_entry_t        *am_cbs;          /*array of callbacks and their data */
     size_t                        am_cb_array_len; /*len of callback array */
-    /*array of callbacks and their data */
-    ucp_worker_am_rendezvous_entry_t        *am_rendezvous_cbs;
-    /*len of callback array */
-    size_t                        am_rendezvous_cb_array_len;
 
     ucs_cpu_set_t                 cpu_mask;        /* Save CPU mask for subsequent calls to ucp_worker_listen */
     unsigned                      ep_config_max;   /* Maximal number of configurations */
