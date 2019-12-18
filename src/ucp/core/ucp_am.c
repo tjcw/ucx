@@ -1188,8 +1188,8 @@ ucp_am_rendezvous_handler(void *am_arg, void *am_data, size_t am_length,
     ucs_trace("AM RENDEZVOUS ucp_am_rendezvous_handler") ;
 
     if (ucs_unlikely(
-        (rendezvous_hdr->am_id >= worker->am_rendezvous_cb_array_len) ||
-                     (worker->am_rendezvous_cbs[rendezvous_hdr->am_id].cb == NULL)
+        (rendezvous_hdr->am_id >= worker->am_cb_array_len) ||
+                     (worker->am_cbs[rendezvous_hdr->am_id].cb == NULL)
                      )) {
         ucs_warn(
            "UCP Active Message rendezvous was received with id : %u, but there"
@@ -1205,8 +1205,8 @@ ucp_am_rendezvous_handler(void *am_arg, void *am_data, size_t am_length,
     unfinished->am_id = rendezvous_hdr -> am_id ;
 
     unfinished->recv.iovec_max_length = 1 ;
-    status = worker->am_rendezvous_cbs[rendezvous_hdr ->am_id].cb(
-           worker->am_rendezvous_cbs[rendezvous_hdr ->am_id].context,
+    status = worker->am_cbs[rendezvous_hdr ->am_id].cb(
+           worker->am_cbs[rendezvous_hdr ->am_id].context,
                                       rendezvous_hdr->iovec_0,
                                       rendezvous_hdr->iovec_0_length,
                                       NULL,
@@ -1300,10 +1300,10 @@ ucp_am_rendezvous_handler(void *am_arg, void *am_data, size_t am_length,
           }
         /* Drive the AM completion function */
         status = unfinished->recv.local_fn(
-                  worker->am_rendezvous_cbs[rendezvous_hdr->am_id].context,
-                                          unfinished->recv.cookie,
-                                          unfinished->recv.iovec,
-                                          1);
+                  worker->am_cbs[rendezvous_hdr->am_id].context,
+                                 unfinished->recv.cookie,
+                                 unfinished->recv.iovec,
+                                 1);
         ucs_trace("AM RENDEZVOUS local_fn returns %d", status) ;
 
         if ( ret == UCS_OK )
@@ -1436,10 +1436,10 @@ ucp_am_rendezvous_get_completion_callback(void *request, ucs_status_t status)
       }
     /* Drive the AM local function  */
     status = unfinished->recv.local_fn(
-         worker->am_rendezvous_cbs[unfinished->am_id].context,
-                                      unfinished->recv.cookie,
-                                      unfinished->recv.iovec,
-                                      1);
+         worker->am_cbs[unfinished->am_id].context,
+                        unfinished->recv.cookie,
+                        unfinished->recv.iovec,
+                        1);
     ucs_trace("AM RENDEZVOUS local_fn returns %d", status) ;
 
     if ( ret == UCS_OK )

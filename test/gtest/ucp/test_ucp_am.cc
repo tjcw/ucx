@@ -55,7 +55,7 @@ public:
                                           ucp_ep_h reply_ep,
                                           unsigned flags,
                                           size_t remaining_length,
-                                          ucp_am_rendezvous_recv_t *recv);
+                                          ucp_am_recv_t *recv);
 
     static ucs_status_t ucp_process_reply_cb(void *arg, void *data,
                                              size_t length,
@@ -69,7 +69,7 @@ public:
 
     ucs_status_t am_rendezvous_handler(test_ucp_am_base *me, void *data,
                             size_t  length, unsigned flags,
-                            size_t remaining_length, ucp_am_rendezvous_recv_t *recv );
+                            size_t remaining_length, ucp_am_recv_t *recv );
 
     static ucs_status_t ucp_process_am_rendezvous_completion_handler (
         void *arg, void *cookie, ucp_dt_iov_t *iovec, size_t iovec_length) ;
@@ -114,7 +114,7 @@ ucs_status_t test_ucp_am_base::ucp_process_am_rendezvous_cb(void *arg, void *dat
                                       ucp_ep_h reply_ep,
                                       unsigned flags,
                                       size_t remaining_length,
-                                      ucp_am_rendezvous_recv_t *recv)
+                                      ucp_am_recv_t *recv)
   {
     test_ucp_am_base *self = reinterpret_cast<test_ucp_am_base*>(arg);
     return self->am_rendezvous_handler(self, data, length, flags, remaining_length, recv) ;
@@ -143,7 +143,7 @@ ucs_status_t test_ucp_am_base::am_handler(test_ucp_am_base *me, void *data,
 
 ucs_status_t test_ucp_am_base::am_rendezvous_handler(test_ucp_am_base *me, void *data,
                         size_t  length, unsigned flags,
-                        size_t remaining_length, ucp_am_rendezvous_recv_t *recv )
+                        size_t remaining_length, ucp_am_recv_t *recv )
   {
     assert(length <= 32) ;
     me->am_rendezvous_length = length ;
