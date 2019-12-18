@@ -133,7 +133,7 @@ typedef struct {
                                          * for checking
                                          */
 #endif
-  ucp_am_rendezvous_recv_t recv ;  /* Items filled in by
+  ucp_am_recv_t recv ;  /* Items filled in by
                                     * initial application AM
                                     */
 } ucp_am_rendezvous_server_unfinished_t ;
