@@ -580,9 +580,8 @@ ucp_am_rendezvous_send_req(ucp_request_t *req, uct_pending_callback_t func,
     return req + 1;
 }
 
-UCS_PROFILE_FUNC(ucs_status_ptr_t, ucp_am_send_nb, 
-                 (ep, id, payload, count, datatype, cb, flags),
-                 ucp_ep_h ep, uint16_t id, const void *payload, 
+ucs_status_ptr_t ucp_am_send_nb_internal
+                 (ucp_ep_h ep, uint16_t id, const void *payload,
                  size_t count, uintptr_t datatype, 
                  ucp_send_callback_t cb, unsigned flags)
 {
@@ -648,8 +647,7 @@ ucp_am_rendezvous_callback(void *request, ucs_status_t status)
 
 }
 
-UCS_PROFILE_FUNC(ucs_status_ptr_t, ucp_am_rendezvous_send_nb,
-                 (ep, id, payload, count, datatype, cb, flags),
+ucs_status_ptr_t ucp_am_rendezvous_send_nb_internal ()
                  ucp_ep_h ep, uint16_t id, const void *payload,
                  size_t count, uintptr_t datatype,
                  ucp_send_callback_t cb, unsigned flags)
@@ -696,7 +694,7 @@ UCS_PROFILE_FUNC(ucs_status_ptr_t, ucp_am_rendezvous_send_nb,
         ucs_trace(
        "AM RENDEZVOUS Call unsuitable for AM over RENDEZVOUS, using regular AM"
             ) ;
-        return ucp_am_send_nb(ep, id, payload, count, datatype, cb, flags) ;
+        return ucp_am_send_nb_internal(ep, id, payload, count, datatype, cb, flags) ;
       }
 
     ucs_trace(
@@ -834,6 +832,27 @@ UCS_PROFILE_FUNC(ucs_status_ptr_t, ucp_am_rendezvous_send_nb,
      return ret;
 
 }
+
+UCS_PROFILE_FUNC(ucs_status_ptr_t, ucp_am_send_nb,
+                 (ep, id, payload, count, datatype, cb, flags),
+                 ucp_ep_h ep, uint16_t id, const void *payload,
+                 size_t count, uintptr_t datatype,
+                 ucp_send_callback_t cb, unsigned flags)
+  {
+    if ( flags & UCP_AM_SEND_RENDEZVOUS )
+      {
+        return ucp_am_rendezvous_send_nb_internal(
+            ep, id, payload, count, datatype, cb,
+            flags & ~UCP_AM_SEND_RENDEZVOUS
+            ) ;
+      }
+    else
+      {
+        return ucp_am_send_nb_internal(
+            ep, id, payload, count, datatype, cb, flags
+            ) ;
+      }
+  }
 
 static ucs_status_t
 ucp_am_handler_common(ucp_worker_h worker, void *hdr_end,
