@@ -324,9 +324,9 @@ void test_ucp_am::do_send_process_data_iov_test()
     iovec[0].length = i;
     iovec[1].length = i;
 
-    sstatus = ucp_am_rendezvous_send_nb(receiver().ep(), 0,
+    sstatus = ucp_am_send_nb(receiver().ep(), 0,
                              iovec, 2, ucp_dt_make_iov(),
-                             (ucp_send_callback_t) ucs_empty_function, 0);
+                             (ucp_send_callback_t) ucs_empty_function, UCP_AM_SEND_RENDEZVOUS);
     wait(sstatus);
     EXPECT_FALSE(UCS_PTR_IS_ERR(sstatus));
     sent_ams++;
@@ -372,9 +372,9 @@ void test_ucp_am::do_send_process_data_iov_test()
     iovec[0].length = i;
     iovec[1].length = i;
 
-    sstatus = ucp_am_rendezvous_send_nb(receiver().ep(), 0,
+    sstatus = ucp_am_send_nb(receiver().ep(), 0,
                              iovec, 2, ucp_dt_make_iov(),
-                             (ucp_send_callback_t) ucs_empty_function, 0);
+                             (ucp_send_callback_t) ucs_empty_function, UCP_AM_SEND_RENDEZVOUS);
     wait(sstatus);
     EXPECT_FALSE(UCS_PTR_IS_ERR(sstatus));
     sent_ams++;
