@@ -108,11 +108,17 @@ UCS_PROFILE_FUNC(ucs_status_t, ucp_worker_set_am_handler,
     worker->am_cbs[id].cb      = cb;
     worker->am_cbs[id].context = arg;
     worker->am_cbs[id].flags   = (params->field_mask & UCP_AM_FIELD_FLAGS) ?  params->flags : 0 ;
+    if ( params->field_mask & UCP_AM_FIELD_IOVEC_SIZE )
+      {
+        /* Only support contiguous at the moment */
+        ucs_assert(params->iovec_size == 1) ;
+      }
     worker->am_cbs[id].iovec_size = (params->field_mask & UCP_AM_FIELD_IOVEC_SIZE) ? params->iovec_size : 0 ;
 
     return UCS_OK;
 }
 
+#if 0
 UCS_PROFILE_FUNC(ucs_status_t, ucp_worker_set_am_rendezvous_handler,
                  (worker, id, cb, arg, flags, params),
                  ucp_worker_h worker, uint16_t id,
@@ -149,7 +155,7 @@ UCS_PROFILE_FUNC(ucs_status_t, ucp_worker_set_am_rendezvous_handler,
 
     return UCS_OK;
 }
-
+#endif
 static size_t 
 ucp_am_bcopy_pack_args_single(void *dest, void *arg)
 {
