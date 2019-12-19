@@ -3219,7 +3219,7 @@ typedef struct ucp_am_recv {
    *
    *
    * @note This callback should be set and released
-   *       by @ref ucp_worker_set_ams_handler function.
+   *       by @ref ucp_worker_set_am_handler function.
    *
    */
 typedef ucs_status_t (*ucp_am_callback_t)(
