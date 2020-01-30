@@ -2198,7 +2198,7 @@ void ucp_rkey_destroy(ucp_rkey_h rkey);
  * @param [in]  datatype    Datatype descriptor for the elements in the buffer.
  * @param [in]  cb          Callback that is invoked upon completion of the 
  *                          data transfer if it is not completed immediately.
- * @param [in]  flags       see enum ucp_send_am_flags.
+ * @param [in]  flags       See enum ucp_send_am_flags.
  *
  * @return NULL             Active Message was sent immediately.
  * @return UCS_PTR_IS_ERR(_ptr) Error sending Active Message.
@@ -3116,7 +3116,7 @@ ucs_status_ptr_t ucp_worker_flush_nb(ucp_worker_h worker, unsigned flags,
  */
 enum ucp_am_params_field {
   /* Flafs field */
-  UCP_AM_FIELD_FLAGS = UCS_BIT(0),
+  UCP_AM_FIELD_FLAGS      = UCS_BIT(0),
   /* Max size of the iovec returned by the initial AM */
   UCP_AM_FIELD_IOVEC_SIZE = UCS_BIT(1)
 };
@@ -3138,7 +3138,7 @@ typedef struct ucp_am_params {
 
 /*
  * The ucp library will drive a function on the arrival of each fragment
- * of data from the client.
+ * of data from the initiator.
  */
 typedef void (*ucp_am_data_function_t)(
                                        void *target,
@@ -3148,7 +3148,7 @@ typedef void (*ucp_am_data_function_t)(
                                       ) ;
 /*
  * The ucp library will drive a function when the transfer from the
- * client is complete.
+ * initiator is complete.
  */
 typedef ucs_status_t (*ucp_am_local_function_t)(
                                                 void *arg,
@@ -3162,7 +3162,7 @@ typedef ucs_status_t (*ucp_am_local_function_t)(
  * callback and the ucp library. The ucp library sets up 'iovec_max_length'
  * to indicate the length of the iovec in this structure; the remaining
  * fields are set by the callback to indicate what should happen
- * with the remaining data from the client. In the initial implementation,
+ * with the remaining data from the initiator. In the initial implementation,
  * iovec_max_length is always 1.
  */
 typedef struct ucp_am_recv {
@@ -3171,8 +3171,10 @@ typedef struct ucp_am_recv {
     /* Argument to be passed to local_fn */
     void                   *cookie;
     /* Function to be driven when each fragment of data transfer is complete
-     * In the initial implementation, all data is transferred in one fragment, so
-     * the data_fn si driven once just before the local_fn
+     * In the initial implementation, all data is transferred in one fragment,
+     * so the data_fn isriven once just before the local_fn .
+     * This implementation is to ease porting of applicaitons currently
+     * coded to use IBM PAMI.
      */
     ucp_am_data_function_t  data_fn;
     /* Argument to be passed to data_fn */
@@ -3181,13 +3183,21 @@ typedef struct ucp_am_recv {
     size_t                  iovec_max_length;
     /* Size of iovec filled in by the callback */
     size_t                  iovec_length;
-    /* iovec indicating where the data from the client is to be placed */
+    /* iovec indicating where the data from the initiator is to be placed */
     ucp_dt_iov_t            iovec[1];
   } ucp_am_recv_t;
 
   /**
    * @ingroup UCP_ENDPOINT
    * @brief Callback to process incoming Active Message.
+   *
+   * If the UCP_AM_SEND_RENDEZVOUS flag is set, and the AM is for an iovec with
+   * exactly 2 elements, and the first element length does not exceed a
+   * threshold (32 bytes in the initial implementation), then the AM gets
+   * carried partially by RDMA. The first element of the iovec, here called
+   * the header, is carried in the initial packet from the initiator. The
+   * second element of the iovec, nominally the bulk data, is carried by the
+   * target issuing an RDMA 'get'.
    *
    * When the callback is called, @a flags indicates how @a data should be handled.
    *
