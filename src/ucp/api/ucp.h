@@ -3115,7 +3115,7 @@ ucs_status_ptr_t ucp_worker_flush_nb(ucp_worker_h worker, unsigned flags,
  * present. It is used to enable backward compatibility support.
  */
 enum ucp_am_params_field {
-  /* Flafs field */
+  /* Flags field */
   UCP_AM_FIELD_FLAGS      = UCS_BIT(0),
   /* Max size of the iovec returned by the initial AM */
   UCP_AM_FIELD_IOVEC_SIZE = UCS_BIT(1)
@@ -3128,13 +3128,13 @@ enum ucp_am_params_field {
  * UCP active message function
  */
 typedef struct ucp_am_params {
-  uint64_t field_mask ;
-  uint64_t flags ;
+  uint64_t field_mask;
+  uint64_t flags;
   /* Number of elements that the ucp library should allocate in the 'iovec'
    * for the callback to fill in.
    */
-  size_t iovec_size ;
-} ucp_am_params_t ;
+  size_t iovec_size;
+} ucp_am_params_t;
 
 /*
  * The ucp library will drive a function on the arrival of each fragment
@@ -3145,7 +3145,7 @@ typedef void (*ucp_am_data_function_t)(
                                        void *source,
                                        size_t bytes,
                                        void *cookie
-                                      ) ;
+                                      );
 /*
  * The ucp library will drive a function when the transfer from the
  * initiator is complete.
@@ -3155,7 +3155,7 @@ typedef ucs_status_t (*ucp_am_local_function_t)(
                                                 void *cookie,
                                                 ucp_dt_iov_t *iovec,
                                                 size_t iovec_length
-                                               ) ;
+                                               );
 
 /*
  * Structure for communicatiob between the active message
@@ -3178,7 +3178,7 @@ typedef struct ucp_am_recv {
      */
     ucp_am_data_function_t  data_fn;
     /* Argument to be passed to data_fn */
-    void                   *data_cookie ;
+    void                   *data_cookie;
     /* Sise of iovec allocated by the ucp library */
     size_t                  iovec_max_length;
     /* Size of iovec filled in by the callback */
