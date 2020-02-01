@@ -3144,7 +3144,7 @@ typedef struct ucp_am_params {
  * The ucp library will drive a function on the arrival of each fragment
  * of data from the initiator.
  *
- * @param [out} target    Where the data should be placed. NULL if no copyimg
+ * @param [out} target    Where the data should be placed. NULL if no copying
  *                        needed.
  * @param [in}  source    Where the data currently is
  * @param [in]  bytes     How much data has just arrived
@@ -3161,13 +3161,13 @@ typedef void (*ucp_am_data_function_t)( void *target,
  */
 /**
  * @ingroup UCP_COMM
- * @brief Completion callback for trannsfer from initiator complete.
+ * @brief Completion callback for transfer from initiator complete.
  *
  * The ucp library will drive a function when the transfer from the
  * initiator is complete.
  *
  * @param [in}  arg             Request structure
- * @param [in}  cookie          Cookiefrom the ucp_am_recv structure
+ * @param [in}  cookie          Cookie from the ucp_am_recv structure
  * @param [in]  iovec           Description of the received data
  * @param [in]  iovec_length    Number of elements in iovec
  */
