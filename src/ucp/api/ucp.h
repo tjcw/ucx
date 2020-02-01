@@ -3136,29 +3136,49 @@ typedef struct ucp_am_params {
   size_t iovec_size;
 } ucp_am_params_t;
 
-/*
+/**
+ * @ingroup UCP_COMM
+ * @brief Completion callback for data arrivals.
+ *
+ * This callback routine is invoked whenever the @ref ucp_tag_send_nb
  * The ucp library will drive a function on the arrival of each fragment
  * of data from the initiator.
+ *
+ * @param [out} target    Where the data should be placed. NULL if no copyimg
+ *                        needed.
+ * @param [in}  source    Where the data currently is
+ * @param [in]  bytes     How much data has just arrived
+ * @param [in]  cookie    Data cookie from the ucp_am_recv structure
  */
-typedef void (*ucp_am_data_function_t)(
-                                       void *target,
-                                       void *source,
-                                       size_t bytes,
-                                       void *cookie
+typedef void (*ucp_am_data_function_t)( void *target,
+                                        void *source,
+                                        size_t bytes,
+                                        void *cookie
                                       );
 /*
  * The ucp library will drive a function when the transfer from the
  * initiator is complete.
  */
-typedef ucs_status_t (*ucp_am_local_function_t)(
-                                                void *arg,
-                                                void *cookie,
-                                                ucp_dt_iov_t *iovec,
-                                                size_t iovec_length
+/**
+ * @ingroup UCP_COMM
+ * @brief Completion callback for trannsfer from initiator complete.
+ *
+ * The ucp library will drive a function when the transfer from the
+ * initiator is complete.
+ *
+ * @param [in}  arg             Request structure
+ * @param [in}  cookie          Cookiefrom the ucp_am_recv structure
+ * @param [in]  iovec           Description of the received data
+ * @param [in]  iovec_length    Number of elements in iovec
+ */
+typedef ucs_status_t (*ucp_am_local_function_t)( void *arg,
+                                                 void *cookie,
+                                                 ucp_dt_iov_t *iovec,
+                                                 size_t iovec_length
                                                );
 
 /*
- * Structure for communicatiob between the active message
+ * Structure for communication between the active message
  * callback and the ucp library. The ucp library sets up 'iovec_max_length'
  * to indicate the length of the iovec in this structure; the remaining
  * fields are set by the callback to indicate what should happen
@@ -3172,7 +3192,7 @@ typedef struct ucp_am_recv {
     void                   *cookie;
     /* Function to be driven when each fragment of data transfer is complete
      * In the initial implementation, all data is transferred in one fragment,
-     * so the data_fn isriven once just before the local_fn .
+     * so the data_fn is called once just before the local_fn .
      * This implementation is to ease porting of applicaitons currently
      * coded to use IBM PAMI.
      */
