@@ -426,7 +426,7 @@ enum ucp_am_cb_flags {
  * appropriate.
  */
 enum ucp_send_am_flags {
-    UCP_AM_SEND_REPLY      = UCS_BIT(0) ,
+    UCP_AM_SEND_REPLY      = UCS_BIT(0),
     UCP_AM_SEND_RENDEZVOUS = UCS_BIT(1)
 };
 
@@ -3155,112 +3155,6 @@ typedef void (*ucp_am_data_function_t)( void *target,
                                         size_t bytes,
                                         void *cookie
                                       );
-/*
- * The ucp library will drive a function when the transfer from the
- * initiator is complete.
- */
-/**
- * @ingroup UCP_COMM
- * @brief Completion callback for transfer from initiator complete.
- *
- * The ucp library will drive a function when the transfer from the
- * initiator is complete.
- *
- * @param [in}  arg             Request structure
- * @param [in}  cookie          Cookie from the ucp_am_recv structure
- * @param [in]  iovec           Description of the received data
- * @param [in]  iovec_length    Number of elements in iovec
- */
-typedef ucs_status_t (*ucp_am_local_function_t)( void *arg,
-                                                 void *cookie,
-                                                 ucp_dt_iov_t *iovec,
-                                                 size_t iovec_length
-                                               );
-
-/*
- * Structure for communication between the active message
- * callback and the ucp library. The ucp library sets up 'iovec_max_length'
- * to indicate the length of the iovec in this structure; the remaining
- * fields are set by the callback to indicate what should happen
- * with the remaining data from the initiator. In the initial implementation,
- * iovec_max_length is always 1.
- */
-typedef struct ucp_am_recv {
-    /* Function to be driven when data transfer is complete */
-    ucp_am_local_function_t local_fn;
-    /* Argument to be passed to local_fn */
-    void                   *cookie;
-    /* Function to be driven when each fragment of data transfer is complete
-     * In the initial implementation, all data is transferred in one fragment,
-     * so the data_fn is called once just before the local_fn .
-     * This implementation is to ease porting of applicaitons currently
-     * coded to use IBM PAMI.
-     */
-    ucp_am_data_function_t  data_fn;
-    /* Argument to be passed to data_fn */
-    void                   *data_cookie;
-    /* Sise of iovec allocated by the ucp library */
-    size_t                  iovec_max_length;
-    /* Size of iovec filled in by the callback */
-    size_t                  iovec_length;
-    /* iovec indicating where the data from the initiator is to be placed */
-    ucp_dt_iov_t            iovec[1];
-  } ucp_am_recv_t;
-
-  /**
-   * @ingroup UCP_ENDPOINT
-   * @brief Callback to process incoming Active Message.
-   *
-   * If the UCP_AM_SEND_RENDEZVOUS flag is set, and the AM is for an iovec with
-   * exactly 2 elements, and the first element length does not exceed a
-   * threshold (32 bytes in the initial implementation), then the AM gets
-   * carried partially by RDMA. The first element of the iovec, here called
-   * the header, is carried in the initial packet from the initiator. The
-   * second element of the iovec, nominally the bulk data, is carried by the
-   * target issuing an RDMA 'get'.
-   *
-   * When the callback is called, @a flags indicates how @a data should be handled.
-   *
-   * @param [in]  arg      User-defined argument.
-   * @param [in]  data     Points to the received data header.
-   * @param [in]  length   Length of data header.
-   * @param [in]  reply_ep If the Active Message is sent with the
-   *                       UCP_AM_SEND_REPLY flag, the sending ep
-   *                       will be passed in. If not, NULL will be passed.
-   * @param [in]  flags    If this flag is set to UCP_CB_PARAM_FLAG_DATA,
-   *                       the callback can return UCS_INPROGRESS and
-   *                       data will persist after the callback returns.
-   * @param [in]  remaining_length Length of data which has not yet been
-   *                       transferred
-   * @param [out] recv     Struture passed to the ucp library to control
-   *                       placement of the remaining data
-   *
-   * @return UCS_OK        @a data will not persist after the callback returns.
-   *
-   * @return UCS_INPROGRESS Can only be returned if flags is set to
-   *                        UCP_CB_PARAM_FLAG_DATA. If UCP_INPROGRESS
-   *                        is returned, data will persist after the
-   *                        callback has returned. To free the memory,
-   *                        a pointer to the data must be passed into
-   *                        @ref ucp_am_data_release.
-   *
-   * @return UCS_ERR_NO_MEMORY Callback was unable to allocate memory for
-   *                        Active Message to be received into
-   *
-   *
-   * @note This callback should be set and released
-   *       by @ref ucp_worker_set_am_handler function.
-   *
-   */
-typedef ucs_status_t (*ucp_am_callback_t)(
-                                         void *arg,
-                                         void *data,
-                                         size_t length,
-                                         ucp_ep_h reply_ep,
-                                         unsigned flags,
-                                         size_t remaining_length,
-                                         ucp_am_recv_t *recv
-                                        );
 
 /**
  * @ingroup UCP_WORKER
@@ -3283,7 +3177,7 @@ typedef ucs_status_t (*ucp_am_callback_t)(
  * @return error code if the worker does not support Active Messages or
  *         requested callback flags.
  */
-ucs_status_t ucp_worker_set_am_handler(
+ucs_status_t ucp_worker_set_am_handler_rndv(
                                        ucp_worker_h worker,
                                        const ucp_am_params_t *params,
                                        uint16_t id,
